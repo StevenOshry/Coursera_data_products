@@ -1,0 +1,117 @@
+<style>  
+.small-code pre code {
+  font-size: 80%;
+  margin-top: -150px;
+}
+</style>  
+<style>  
+.tight-top pre code {
+  margin-top: -150px;
+}
+</style>
+World City Mapping Tool
+========================================================
+author:Steven Oshry
+date: 8/25/2015  
+transition:rotate  
+
+Description of Shiny App
+====
+- Leaflet is a relatively new mapping tool that integrates nicely with R
+- This app loads a database consisting of over 40,000 US cities and over 10,000 cities from non-US countries
+- User selects Country, State(if Country is in US), city, and map type
+- after map appears, user can select zoom level using slider below map
+      -    I find slider bar easier to use than the zoom function in map
+- you can run the app from the shiny hosted site [here](https://stevenoshry.shinyapps.io/World_city_finder)
+- State input box does not show on screen unless country selected is United States(condtional panel in UI.r)
+
+Illustration of Shiny App
+====
+class:small-code
+![My Figure](My_app_screenshot.JPG)
+<small> This App allows a user to find any major city with many map choices all at the touch of a button.</small> 
+
+<small> After user selects menu items in input boxes, map will render based on these choices.</small>  
+***
+<small> User can then customize appearance by selecting 1 of 12 map types and using the zoom slider below the map for the view.</small>  
+
+Slide With Code
+========================================================
+class: small-code
+Example of R Code to read data and plot map with Leaflet   
+***
+```{r, echo=TRUE, eval=FALSE}
+# load world cities database
+load("world_citiesi.Rdata")
+world_cities <- world_citiesi
+
+# user input fields
+country_selected<-"United States"
+state_selected<-"NY"
+city_selected<-"New York"
+zoom_selected<-10
+map_selected<-"MapQuestOpen.OSM"
+
+# get longitude and latitude based on parameters
+long_to_use<- world_cities$longitude[world_cities$country==country_selected & 
+                   world_cities$state==state_selected &  world_cities$city==city_selected][1]
+lat_to_use<- world_cities$latitude[world_cities$country==country_selected & 
+                                     world_cities$state==state_selected & 
+                                     world_cities$city==city_selected][1]
+#draw map
+m <- leaflet() %>%
+  addProviderTiles(map_selected) %>%  
+  setView(long_to_use, lat_to_use,  zoom_selected)  %>%
+  addMarkers(lng=long_to_use, lat=lat_to_use, popup=city_selected)
+m
+```
+
+
+
+Output from code on previous Slide
+========================================================
+![My Figure](Leaflet_Output.JPG)
+
+
+```{r, echo=FALSE, results="asis"}
+#install leaflet
+
+if(!require(devtools)) install.packages("devtools")
+if(!require(leaflet)) install_github("rstudio/leaflet")
+library(leaflet)
+require(leaflet)
+library(httpuv)
+library(caTools)
+library(htmltools)
+# load world cities database
+load("world_citiesi.Rdata")
+world_cities <- world_citiesi
+
+# user input fields
+country_selected<-"United States"
+state_selected<-"NY"
+city_selected<-"New York"
+zoom_selected<-10
+map_selected<-"MapQuestOpen.OSM"
+
+
+# get longitude and latitude based on parameters
+long_to_use<- world_cities$longitude[world_cities$country==country_selected & world_cities$state==state_selected & 
+                         world_cities$city==city_selected][1]
+lat_to_use<- world_cities$latitude[world_cities$country==country_selected & world_cities$state==state_selected & 
+                                       world_cities$city==city_selected][1]
+#draw map
+
+
+
+# m <- leaflet() 
+# m <-   addProviderTiles(m, provider=map_selected)  
+# m <-  setView(map=m, lng=long_to_use, lat=lat_to_use,  zoom=zoom_selected)
+# m <-  addMarkers(map=m,lng=long_to_use, lat=lat_to_use, popup=city_selected)
+# m
+
+```
+
+
+
+
